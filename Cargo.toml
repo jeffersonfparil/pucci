@@ -1,0 +1,15 @@
+[package]
+name = "pucci"
+version = "0.1.0"
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+### Remove the panic abort options below because we now have "panic-strategy": "abort" in "x86_64-pucci.json"
+# [profile.dev]
+# panic = "abort"
+# [profile.release]
+# panic = "abort"
+
+[dependencies]
+bootloader = "0.9" ### To use this we must do 3 things (1) `rustup component add llvm-tools-preview`, (2) `cd ~; cargo install bootimage; cd -`, and run `cargo bootimage --target x86_64-pucci.json`
