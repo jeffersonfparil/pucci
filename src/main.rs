@@ -32,8 +32,14 @@ pub extern "C" fn _start() -> ! {
 	loop {}
 }
 
-// # Bare-bones compilation: `cargo rustc -- -C link-arg=-nostartfiles`
-// # Kernel compilation: `cargo build --target x86_64-pucci.json`
+// # Bare-bones compilation
+// `cargo rustc -- -C link-arg=-nostartfiles`
+// For details see [here](https://os.phil-opp.com/freestanding-rust-binary/).
+//
+// # Kernel compilation
+// `cargo build --target x86_64-pucci.json`
+// Details [here](https://os.phil-opp.com/minimal-rust-kernel/).
+//
 // # Hello world compilation:
 // - Enable rustc nightly, install llvm rustup components and the bootloader crate, then compile:
 // 	```shell
@@ -60,5 +66,35 @@ pub extern "C" fn _start() -> ! {
 //		[target.'cfg(target_os = "none")']
 //		runner = "bootimage runner"
 //		```
-//	+ Run: `cargo run --target x86_64-pucci.json`
 //	````
+// Run: `cargo run --target x86_64-pucci.json`
+// For more details see the same article as in [Kernel compilation above](#kernel-compilation).
+//
+// # VGA Text Mode
+//
+// Table 1. Array of bits representing a single character on screen
+// | Bit(s) | Value					|
+// | 0 -  7	| ASCII 8-bit character |
+// | 8 - 11	| Foreground colour		|
+// |12 - 14	| Background colour		|
+// |15		| Blink					|
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
