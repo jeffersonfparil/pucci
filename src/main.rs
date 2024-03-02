@@ -3,6 +3,8 @@
 
 use core::panic::PanicInfo;
 
+mod vga_buffer;
+
 // Panic handler
 #[cfg(not(test))] // This line is used to disable rust-analyzer from winging duplicate panic definition as it is unable to see that we are not including std!
 #[panic_handler]
@@ -11,7 +13,7 @@ fn panic(_info: &PanicInfo) -> ! {
 }
 
 // Simple printing into VG whose buffer is located at address 0xb8000
-static HELLO: &[u8] = b"Hello world!";
+// static HELLO: &[u8] = b"Hello world!";
 
 // Using the C naming convention output the "_start" function because 
 // it is the default entry point function for most systems,
@@ -21,13 +23,15 @@ static HELLO: &[u8] = b"Hello world!";
 // it only exits by shutting down the machine.
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
-	let vga_buffer = 0xb8000 as *mut u8;
-	for (i, &byte) in HELLO.iter().enumerate() {
-		unsafe {
-			*vga_buffer.offset(i as isize * 2) = byte;
-			*vga_buffer.offset(i as isize * 2 + 1) = 0xb;
-		}
-	}
+	// let vga_buffer = 0xb8000 as *mut u8;
+	// for (i, &byte) in HELLO.iter().enumerate() {
+	// 	unsafe {
+	// 		*vga_buffer.offset(i as isize * 2) = byte;
+	// 		*vga_buffer.offset(i as isize * 2 + 1) = 0xb;
+	// 	}
+	// }
+	// vga_buffer::print_someshit();
+	vga_buffer::print_something();
 
 	loop {}
 }
@@ -72,7 +76,7 @@ pub extern "C" fn _start() -> ! {
 //
 // # VGA Text Mode
 //
-// Table 1. Array of bits representing a single character on screen
+// Table 1. Array of bits representing a single character on screen2
 // | Bit(s) | Value					|
 // | 0 -  7	| ASCII 8-bit character |
 // | 8 - 11	| Foreground colour		|
