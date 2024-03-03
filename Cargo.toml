@@ -13,3 +13,4 @@ edition = "2018"
 
 [dependencies]
 bootloader = "0.9" ### To use this we must do 3 things (1) `rustup component add llvm-tools-preview`, (2) `cd ~; cargo install bootimage; cd -`, and run `cargo bootimage --target x86_64-pucci.json`
+volatile = "0.2.6" ### To prevent the compiler from optimising away our writes into VGA memory because it may think it's not used

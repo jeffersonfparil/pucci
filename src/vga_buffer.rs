@@ -3,7 +3,7 @@
 // To do this we will perform a u8 shift such that:
 //      - the foreground colour occupies the first 4 bits, and 
 //      - the background colour will be shifted to to the last 4 bits via (brackground as u8) << 4 | (foreground as u8)
-#[allow(dead_code)]
+// #[allow(dead_code)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(u8)]
 pub enum Colour {
@@ -53,9 +53,14 @@ struct ScreenChar {
 // The first dimension refers to the row position and and second refers to the column position.
 const BUFFER_HEIGHT: usize = 25;
 const BUFFER_WIDTH: usize = 80;
-#[repr(transparent)]
+// #[repr(transparent)]
+// struct Buffer {
+//     chars: [[ScreenChar; BUFFER_WIDTH]; BUFFER_HEIGHT],
+// }
+// We revise the Buffer using the volatile crate
+use volatile::Volatile;
 struct Buffer {
-    chars: [[ScreenChar; BUFFER_WIDTH]; BUFFER_HEIGHT],
+    chars: [[Volatile<ScreenChar>; BUFFER_WIDTH]; BUFFER_HEIGHT],
 }
 
 // Struct for writing into the screen buffer
@@ -82,10 +87,20 @@ impl Writer {
                 let row = BUFFER_HEIGHT - 1;
                 let col = self.column_position;
                 let colour_code = self.colour_code;
-                self.buffer.chars[row][col] = ScreenChar {
+                // Modify the Buffer, i.e. write to it.
+                // self.buffer.chars[row][col] = ScreenChar {
+                //     ascii_character: byte,
+                //     colour_code,
+                // };
+                // However, we need the "volatile" crate to prevent possible future compilation 
+                //      which may get rid of the step below altogether because we do not read it, and
+                //      it does not know we're writing into the VGA and not into RAM,
+                //      and the compiler may optimise it away.
+                // Below instead of directly mutating ScreenChar, we use the volatile::Volatile's write method
+                self.buffer.chars[row][col].write(ScreenChar {
                     ascii_character: byte,
                     colour_code,
-                };
+                });
                 self.column_position += 1;
             }
         }
@@ -104,26 +119,32 @@ impl Writer {
     }
 }
 
-// // Test screen writing function
-// pub fn print_someshit() {
-//     let mut writer = Writer {
-//         column_position: 0,
-//         colour_code: ColourCode::new(Colour::Red, Colour::White),
-//         buffer: unsafe {&mut *(0xb8000 as *mut Buffer)},
-//     };
-//     writer.write_byte(b'H');
-//     writer.write_string("ello ");
-//     writer.write_string("Wörld!");
-// }
+// Here we define Rust's formatting macros `write!` and `writeln!`, because they're nice and simple enough to implement,
+//      i.e. simple define the write_str method within the core::fmt::Write trait
+// This will allow us to use Rust's built-in write! and writeln!
+use core::fmt;
 
-pub fn print_something() {
+impl fmt::Write for Writer {
+    fn write_str(&mut self, s: &str) -> fmt::Result {
+        self.write_string(s);
+        Ok(())
+    }
+}
+
+
+
+// Test screen writing function
+pub fn print_someshit() {
+    use core::fmt::Write; // Use Rust's built-in formatting macros (`write!` and `writeln!`) which we implemented for our Writer struct above.
     let mut writer = Writer {
         column_position: 0,
-        colour_code: ColourCode::new(Colour::Yellow, Colour::Black),
-        buffer: unsafe { &mut *(0xb8000 as *mut Buffer) },
+        colour_code: ColourCode::new(Colour::Red, Colour::White),
+        buffer: unsafe {&mut *(0xb8000 as *mut Buffer)},
     };
-
     writer.write_byte(b'H');
     writer.write_string("ello ");
-    writer.write_string("Wörld!");
+    // writer.write_string("Wörld!");
+    // Using Rust's built-in write! macro after implementing `write_str` method above for our Writer struct
+    write!(writer, "World!\nNice numbers in my opinion are {} and {}.", 42.00000000000001, 789.0/123.0).expect("Error: something went wrong with writing our characters into VGA memory!");
+    // Note that since we have not yet implemented the `new_line` method for our Writer struct then we're overflowing the first line.
 }

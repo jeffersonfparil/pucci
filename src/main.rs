@@ -12,7 +12,7 @@ fn panic(_info: &PanicInfo) -> ! {
 	loop {}
 }
 
-// Simple printing into VG whose buffer is located at address 0xb8000
+// // Simple printing into VG whose buffer is located at address 0xb8000
 // static HELLO: &[u8] = b"Hello world!";
 
 // Using the C naming convention output the "_start" function because 
@@ -30,8 +30,7 @@ pub extern "C" fn _start() -> ! {
 	// 		*vga_buffer.offset(i as isize * 2 + 1) = 0xb;
 	// 	}
 	// }
-	// vga_buffer::print_someshit();
-	vga_buffer::print_something();
+	vga_buffer::print_someshit();
 
 	loop {}
 }
@@ -73,6 +72,10 @@ pub extern "C" fn _start() -> ! {
 //	````
 // Run: `cargo run --target x86_64-pucci.json`
 // For more details see the same article as in [Kernel compilation above](#kernel-compilation).
+//
+// # IMPORTANT ADDITIONAL CONFIG
+// To allow us to just run `cargo run`, we need to update [`.cargo/config.toml`](.cargo/config.toml)
+// Also, I found that I was having an error linking with rust-lld without thiws line in there: `build-std-features = ["compiler-builtins-mem"]`
 //
 // # VGA Text Mode
 //
