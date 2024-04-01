@@ -86,7 +86,7 @@ pub extern "C" fn _start() -> ! {
 // |12 - 14	| Background colour		|
 // |15		| Blink					|
 // 
-// 
+// Run: `cargo run` 
 // 
 // 
 // 

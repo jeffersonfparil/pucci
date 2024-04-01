@@ -1,0 +1,18 @@
+layout {
+    cwd "/home/jeffparil/Documents/pucci"
+    pane size=1 borderless=true {
+        plugin location="zellij:tab-bar"
+    }
+    pane split_direction="vertical" {
+        pane split_direction="horizontal" size="50%" {
+            pane cwd="." size="50%"
+            pane cwd="." size="50%" command="htop"
+        }
+        pane size="50%" command="vim" focus=true {
+            args "README.md"
+        }
+    }
+    pane size=2 borderless=true {
+        plugin location="zellij:status-bar"
+    }
+}
